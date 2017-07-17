@@ -1,0 +1,72 @@
+﻿<QueryViewSpec
+	xmlns="bb_appfx_queryview"
+	xmlns:c="bb_appfx_commontypes" 
+	ID="2f52df74-a5ef-471a-a051-3d51eb0061ec"
+	Name="Smart Field Instance Query"
+	Description="A view defined for querying on smart field instance records"
+	Author="Dignity Health"
+	IsRoot="true"
+	PrimaryKeyField="ID"
+	RecordType="Smart Field Instance"
+	c:SecurityUIFolder="Smart Field Instance"
+	>
+
+	<!-- define the view used to return data for the query -->
+	<ViewImplementation ViewName="USR_V_QUERY_SMARTFIELDINSTANCE">
+		<ViewSQL>
+			<![CDATA[
+SELECT
+	SF.ID,
+	SF.NAME,
+	SF.DESCRIPTION,
+	SF.SMARTFIELDCATALOGID,
+	SF.SITEFILTERENABLEDFORINSTANCE,
+	SF.LASTRUNON,
+	SMARTFIELDCATEGORYCODE.DESCRIPTION AS SMARTFIELDCATEGORY,
+	ADDEDBY.APPLICATIONNAME as [ADDEDBY_APPLICATION],
+	ADDEDBY.USERNAME as [ADDEDBY_USERNAME],
+	CHANGEDBY.APPLICATIONNAME as [CHANGEDBY_APPLICATION],
+	CHANGEDBY.USERNAME as [CHANGEDBY_USERNAME],
+	SF.DATEADDED,
+	SF.DATECHANGED,
+	SF.TSLONG
+FROM
+	SMARTFIELD SF
+	LEFT OUTER JOIN DBO.CHANGEAGENT AS [ADDEDBY] 
+		ON [ADDEDBY].ID = SF.ADDEDBYID
+	LEFT OUTER JOIN DBO.CHANGEAGENT AS [CHANGEDBY] 
+		ON [CHANGEDBY].ID = SF.CHANGEDBYID
+	LEFT OUTER JOIN DBO.TABLECATALOG AS [TABLECATALOG] 
+		ON [TABLECATALOG].ID = SF.TABLECATALOGID
+	LEFT OUTER JOIN DBO.SMARTFIELDCATEGORYCODE AS [SMARTFIELDCATEGORYCODE] 
+		ON [SMARTFIELDCATEGORYCODE].ID = SF.SMARTFIELDCATEGORYCODEID
+
+			]]>
+		</ViewSQL>
+	</ViewImplementation>
+
+	<!-- describe each field in the view output -->
+	<Output>
+		<OutputFields>
+			<OutputField Name="ID" Caption="System record ID" Category="System Fields" CaptionResourceKey="$$system_record_id" CategoryResourceKey="$$system_fields" />
+			<OutputField Name="NAME" Caption="Name" DataType="String" />
+			<OutputField Name="DESCRIPTION" Caption="Description" DataType="String" />
+			<OutputField Name="SITEFILTERENABLEDFORINSTANCE" Caption="Site filter enabled" DataType="Boolean" />
+			<OutputField Name="LASTRUNON" Caption="Last run on" DataType="String" />
+			<OutputField Name="SMARTFIELDCATEGORY" Caption="Category" DataType="String" />
+			<OutputField Name="ADDEDBY_APPLICATION" Caption="Added by application" Category="System Fields" DataType="String" CategoryResourceKey="$$system_fields" />
+			<OutputField Name="ADDEDBY_USERNAME" Caption="Added by user name" Category="System Fields" DataType="String" CategoryResourceKey="$$system_fields" />
+			<OutputField Name="CHANGEDBY_APPLICATION" Caption="Changed by application" Category="System Fields" DataType="String" CategoryResourceKey="$$system_fields" />
+			<OutputField Name="CHANGEDBY_USERNAME" Caption="Changed by user name" Category="System Fields" DataType="String" CategoryResourceKey="$$system_fields" />
+			<OutputField Name="DATEADDED" Caption="Date added" Category="System Fields" DataType="String" CategoryResourceKey="$$system_fields" />
+			<OutputField Name="DATECHANGED" Caption="Date changed" Category="System Fields" DataType="String" CategoryResourceKey="$$system_fields" />
+			<OutputField Name="SMARTFIELDCATALOGID" Caption="SmartField catalog system id" Category="System Fields" DataType="Guid" IsHidden="true" CategoryResourceKey="$$system_fields" />
+			<OutputField Name="TSLONG" Caption="Timestamp value" IsHidden="true" Category="System Fields" CaptionResourceKey="$$timestamp_value" CategoryResourceKey="$$system_fields" />
+		</OutputFields>
+	</Output>
+	<RelationshipOperations>
+		<AddToParentView ParentView="V_QUERY_SMARTFIELD" ParentViewRelatedField="ID" Field="SMARTFIELDCATALOGID" PathAlias="SmartField Instance" DisplayAliasResourceKey="$$smartfield" />
+		<AddRelatedView Field="SMARTFIELDCATALOGID" RelatedView="V_QUERY_SMARTFIELD" RelatedField="ID" PathAlias="SmartField" DisplayAliasResourceKey="$$smartfield" />
+	</RelationshipOperations>
+</QueryViewSpec>
+
